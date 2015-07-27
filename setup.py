@@ -16,8 +16,8 @@ setup(
     author_email='oss@infoscoutinc.com',
     license='MIT',
     install_requires=[
-        'pyquery==1.2.8',
-        'requests==2.3.0',
+        'pyquery>=1.2.8',
+        'requests>=2.3.0',
     ],
     download_url = 'https://github.com/infoscout/py-mstr/tarball/v0.1.0',
     tests_require=tests_require,
