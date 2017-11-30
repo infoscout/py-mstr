@@ -160,7 +160,7 @@ class MstrReportTestCase(mox.MoxTestBase):
             'startRow': 0,
             'startCol': 0,
             'maxRows': 100000,
-            'maxCols': 10,
+            'maxCols': 255,
             'styleName': 'ReportDataVisualizationXMLStyle',
             'resultFlags': '393216',
             'reportID': 'report_id',
