@@ -1,18 +1,16 @@
-
-from py_mstr import MstrClient, Singleton, Attribute, Metric, Prompt, \
-    Report, MstrClientException, MstrReportException
+from py_mstr import MstrClient, Singleton, Attribute, Metric, Prompt, Report, MstrClientException, MstrReportException
 
 import unittest
 import mox
 import stubout
+
 
 class MstrClientTestCase(mox.MoxTestBase):
 
     def setUp(self):
         mox.MoxTestBase.setUp(self)
         s = stubout.StubOutForTesting()
-        s.Set(MstrClient, '_login', lambda self, source, name, username,
-            password: None)
+        s.Set(MstrClient, '_login', lambda self, source, name, username, password: None)
         self.client = MstrClient('url?', 'username', 'pw', 'source', 'name')
         self.client._session = 'session'
         self.mox.StubOutWithMock(self.client, "_request")
@@ -24,7 +22,7 @@ class MstrClientTestCase(mox.MoxTestBase):
         """ Test the format of retrieving the session when logging in.
             Requires creating a separate client object in order to test _login
         """
-        
+
         args = {
             'taskId': 'login',
             'server': 'source',
@@ -48,7 +46,7 @@ class MstrClientTestCase(mox.MoxTestBase):
         self.assertEqual('url?', client._base_url)
 
     def test_folder_contents(self):
-        """ Test folder contents are correctly parsed when either a parent 
+        """ Test folder contents are correctly parsed when either a parent
             folder is supplied or is not
         """
 
@@ -78,13 +76,19 @@ class MstrClientTestCase(mox.MoxTestBase):
         child_folder = self.client.get_folder_contents('parent_folder')
 
         self.assertEqual(2, len(base_folders))
-        self.assertEqual({'name': 'folder 1', 'description': 'description 1',
-            'id': 'id 1', 'type': 'type 1'}, base_folders[0])
-        self.assertEqual({'name': 'folder 2', 'description': 'description 2',
-            'id': 'id 2', 'type': 'type 2'}, base_folders[1])
+        self.assertEqual(
+            {'name': 'folder 1', 'description': 'description 1', 'id': 'id 1', 'type': 'type 1'},
+            base_folders[0]
+        )
+        self.assertEqual(
+            {'name': 'folder 2', 'description': 'description 2', 'id': 'id 2', 'type': 'type 2'},
+            base_folders[1]
+        )
         self.assertEqual(1, len(child_folder))
-        self.assertEqual({'name': 'child folder', 'description': 'description',
-            'id': 'child id', 'type': '8'}, child_folder[0])
+        self.assertEqual(
+            {'name': 'child folder', 'description': 'description', 'id': 'child id', 'type': '8'},
+            child_folder[0]
+        )
 
     def test_list_elements(self):
         """ Test correct values are retrieved when retrieving all the values that
@@ -96,10 +100,12 @@ class MstrClientTestCase(mox.MoxTestBase):
             'attributeID': 'attr_id',
             'sessionState': 'session'
         }
-        result = "<response><root><rmc></rmc><items><block><dssid>attr_id:junk"+\
-            "</dssid><n/></block><block><dssid>attr_id:valid1</dssid><n>valid1"+\
-            "</n></block><block><dssid>attr_id:valid2</dssid><n>valid2</n>"+\
+        result = (
+            "<response><root><rmc></rmc><items><block><dssid>attr_id:junk"
+            "</dssid><n/></block><block><dssid>attr_id:valid1</dssid><n>valid1"
+            "</n></block><block><dssid>attr_id:valid2</dssid><n>valid2</n>"
             "</block></items><valueForm>dssid</valueForm><totalSize>3</totalSize>"
+        )
         self.client._request(args).AndReturn(result)
 
         self.mox.ReplayAll()
@@ -118,10 +124,12 @@ class MstrClientTestCase(mox.MoxTestBase):
             'attributeID': 'attr_id',
             'sessionState': 'session'
         }
-        result = "<response><root><container><dssid>attr_id</dssid><n>" +\
-            "attr_name</n><desc/><dssforms><block><dssid>form_guid</dssid>" +\
-            "<n>form_name</n><desc/></block></dssforms></container></root>" +\
+        result = (
+            "<response><root><container><dssid>attr_id</dssid><n>"
+            "attr_name</n><desc/><dssforms><block><dssid>form_guid</dssid>"
+            "<n>form_name</n><desc/></block></dssforms></container></root>"
             "</response>"
+        )
         self.client._request(args).AndReturn(result)
 
         self.mox.ReplayAll()
@@ -142,19 +150,21 @@ class MstrReportTestCase(mox.MoxTestBase):
         self.client._session = 'session'
         self.mox.StubOutWithMock(self.client, "_request")
         self.report = Report(self.client, 'report_id')
-        self.report_response = "<response><report_data_list><report_data>" + \
-            "<prs></prs><objects><attribute rfd='0' id='header1_id' " +\
-            "name='header1_name' type='header1_type'><form rfd='1' id='frm1_id'" +\
-            " base_form_type='frm1_basetype' name='frm1_name' id_form='1' " +\
-            "type='frm1_type'/></attribute><attribute rfd='2' id='header2_id' " +\
-            "name='header2_name' type='header2_type'><form/></attribute>" +\
-            "</objects><template></template><raw_data><headers><oi rfd='0'/>" +\
-            "<oi rfd='2'/></headers><rows cn='100000'><r fr='1'>" +\
-            "<v id='BB:header1_id:1:1:0:2:col1_val1'>col1_val1</v>" +\
-            "<v id='BB:header2_id:1:1:0:3:col2_val1'>col2_val1</v></r>" +\
-            "<r><v id='BB:header1_id:1:1:0:2:col1_val2'>col1_val2</v>" +\
-            "<v id='BB:header2_id:1:1:0:3:col2_val2'>col2_val2</v></r></rows>" +\
+        self.report_response = (
+            "<response><report_data_list><report_data>"
+            "<prs></prs><objects><attribute rfd='0' id='header1_id' "
+            "name='header1_name' type='header1_type'><form rfd='1' id='frm1_id'"
+            " base_form_type='frm1_basetype' name='frm1_name' id_form='1' "
+            "type='frm1_type'/></attribute><attribute rfd='2' id='header2_id' "
+            "name='header2_name' type='header2_type'><form/></attribute>"
+            "</objects><template></template><raw_data><headers><oi rfd='0'/>"
+            "<oi rfd='2'/></headers><rows cn='100000'><r fr='1'>"
+            "<v id='BB:header1_id:1:1:0:2:col1_val1'>col1_val1</v>"
+            "<v id='BB:header2_id:1:1:0:3:col2_val1'>col2_val1</v></r>"
+            "<r><v id='BB:header1_id:1:1:0:2:col1_val2'>col1_val2</v>"
+            "<v id='BB:header2_id:1:1:0:3:col2_val2'>col2_val2</v></r></rows>"
             "</raw_data></report_data></report_data_list></response>"
+        )
         self.report_args = {
             'taskId': 'reportExecute',
             'startRow': 0,
@@ -166,6 +176,7 @@ class MstrReportTestCase(mox.MoxTestBase):
             'reportID': 'report_id',
             'sessionState': 'session'
         }
+
     def tearDown(self):
         mox.MoxTestBase.tearDown(self)
 
@@ -175,8 +186,7 @@ class MstrReportTestCase(mox.MoxTestBase):
             and subsequently an error is raised.
         """
 
-        args = {'reportID': 'report_id', 'sessionState': 'session', 'taskId':
-            'reportExecute'}
+        args = {'reportID': 'report_id', 'sessionState': 'session', 'taskId': 'reportExecute'}
         self.client._request(args).AndReturn(self.report_response)
 
         self.mox.ReplayAll()
@@ -188,16 +198,15 @@ class MstrReportTestCase(mox.MoxTestBase):
             that the message id is correctly forwarded to retrieve the prompts.
         """
 
-        args1 = {'reportID': 'report_id', 'sessionState': 'session', 'taskId':
-            'reportExecute'}
-        self.client._request(args1).AndReturn("<response><msg><id>msg_id</id>" +
-            "</msg></response>")
-        args2 = {'taskId': 'getPrompts', 'objectType': '3', 'msgID': 'msg_id',
-            'sessionState': 'session'}
-        result = "<response><rsl><prompts><block><reqd>false</reqd><mn>msg1</mn><junk>junk</junk><orgn><did>" +\
-            "attr1_id</did><t>12</t><n>attr1_name</n><desc/></orgn><loc><did>guid1</did></loc></block>" +\
-            "<block><mn>msg2</mn><reqd>true</reqd><orgn><did>attr2_id</did><t>type2</t><n>attr2_name</n>" +\
+        args1 = {'reportID': 'report_id', 'sessionState': 'session', 'taskId': 'reportExecute'}
+        self.client._request(args1).AndReturn("<response><msg><id>msg_id</id></msg></response>")
+        args2 = {'taskId': 'getPrompts', 'objectType': '3', 'msgID': 'msg_id', 'sessionState': 'session'}
+        result = (
+            "<response><rsl><prompts><block><reqd>false</reqd><mn>msg1</mn><junk>junk</junk><orgn><did>"
+            "attr1_id</did><t>12</t><n>attr1_name</n><desc/></orgn><loc><did>guid1</did></loc></block>"
+            "<block><mn>msg2</mn><reqd>true</reqd><orgn><did>attr2_id</did><t>type2</t><n>attr2_name</n>"
             "<desc/></orgn><loc><did>guid2</did></loc></block></prompts></rsl></response>"
+        )
         self.client._request(args2).AndReturn(result)
 
         self.mox.ReplayAll()
@@ -215,12 +224,13 @@ class MstrReportTestCase(mox.MoxTestBase):
             once a report has been executed or headers have been requested.
         """
 
-        args = {'taskId': 'browseAttributeForms', 'contentType': 3,
-            'sessionState': 'session', 'reportID': 'report_id'}
-        result = "<response><forms><attrs><a><did>attr1_id</did><n>attr1_name" +\
-            "</n><fms><block><did>form1_id</did><n>DESC</n></block></fms></a>"+\
-            "<a><did>attr2_id</did><n>attr2_name</n><fms></fms></a></attrs>"+\
+        args = {'taskId': 'browseAttributeForms', 'contentType': 3, 'sessionState': 'session', 'reportID': 'report_id'}
+        result = (
+            "<response><forms><attrs><a><did>attr1_id</did><n>attr1_name"
+            "</n><fms><block><did>form1_id</did><n>DESC</n></block></fms></a>"
+            "<a><did>attr2_id</did><n>attr2_name</n><fms></fms></a></attrs>"
             "</forms></response>"
+        )
         self.client._request(args).AndReturn(result)
 
         self.mox.ReplayAll()
@@ -255,10 +265,14 @@ class MstrReportTestCase(mox.MoxTestBase):
         """ Test that when an error is returned by MicroStrategy,
         execute raises an exception
         """
-        self.client._request(self.report_args).AndReturn("<taskResponse>" +
-            "<report_data_list><report_data><error>Object executed is in " +
-            "prompt status. Please resolve prompts and use the message ID." +
-            "</error></report_data></report_data_list></taskResponse>")
+        self.client._request(self.report_args).AndReturn(
+            (
+                "<taskResponse>"
+                "<report_data_list><report_data><error>Object executed is in "
+                "prompt status. Please resolve prompts and use the message ID."
+                "</error></report_data></report_data_list></taskResponse>"
+            )
+        )
 
         self.mox.ReplayAll()
 
@@ -281,10 +295,8 @@ class MstrReportTestCase(mox.MoxTestBase):
         attr2 = Attribute('header2_id', 'header2_name')
         self.assertEqual(attr1, self.report._headers[0])
         self.assertEqual(attr2, self.report._headers[1])
-        self.assertEqual([(attr1, 'col1_val1'), (attr2, 'col2_val1')],
-            self.report._values[0])
-        self.assertEqual([(attr1, 'col1_val2'), (attr2, 'col2_val2')],
-            self.report._values[1])
+        self.assertEqual([(attr1, 'col1_val1'), (attr2, 'col2_val1')], self.report._values[0])
+        self.assertEqual([(attr1, 'col1_val2'), (attr2, 'col2_val2')], self.report._values[1])
 
     def test_element_prompt_execute(self):
         """ Test element prompt answers are configured correctly before
@@ -312,17 +324,21 @@ class MstrReportTestCase(mox.MoxTestBase):
         # test with optional prompt
 
         # dict iteration is non-deterministic, so test it separately
-        result = self.report._format_element_prompts({prompt1: ['value1'],
-            prompt2: ['value2']})
-        self.failUnless(result['elementsPromptAnswers'] in
-            ['attr2_id;attr2_id:value2,attr1_id;attr1_id:value1',
-            'attr1_id;attr1_id:value1,attr2_id;attr2_id:value2'])
-        
-        result = self.report._format_element_prompts({prompt1: ['val1', 'val2'],
-            prompt2: ['val3']})
-        self.failUnless(result['elementsPromptAnswers'] in
-            ['attr2_id;attr2_id:val3,attr1_id;attr1_id:val1;attr1_id:val2',
-            'attr1_id;attr1_id:val1;attr1_id:val2,attr2_id;attr2_id:val3'])
+        result = self.report._format_element_prompts({prompt1: ['value1'], prompt2: ['value2']})
+        self.failUnless(
+            result['elementsPromptAnswers'] in [
+                'attr2_id;attr2_id:value2,attr1_id;attr1_id:value1',
+                'attr1_id;attr1_id:value1,attr2_id;attr2_id:value2',
+            ]
+        )
+
+        result = self.report._format_element_prompts({prompt1: ['val1', 'val2'], prompt2: ['val3']})
+        self.failUnless(
+            result['elementsPromptAnswers'] in [
+                'attr2_id;attr2_id:val3,attr1_id;attr1_id:val1;attr1_id:val2',
+                'attr1_id;attr1_id:val1;attr1_id:val2,attr2_id;attr2_id:val3',
+            ]
+        )
 
     def test_value_prompt_execute(self):
         """ Test value prompt answers are correctly formated before executing the
@@ -338,7 +354,7 @@ class MstrReportTestCase(mox.MoxTestBase):
         args2 = copy.deepcopy(self.report_args)
         args2['valuePromptAnswers'] = 'prompt1^prompt2'
         self.client._request(args2).AndReturn(None)
-        
+
         # optional prompts
         self.report_args.update({'valuePromptAnswers': '^prompt2^^prompt4^'})
         self.client._request(self.report_args).AndReturn(None)
@@ -352,11 +368,8 @@ class MstrReportTestCase(mox.MoxTestBase):
         p5 = Prompt('guid5', 'P5', False)
 
         self.report.execute(value_prompt_answers=[(p1, 'prompt1')])
-        self.report.execute(value_prompt_answers=[(p1, 'prompt1'),
-                                                 (p2, 'prompt2')])
-        self.report.execute(value_prompt_answers=[(p1, ''), (p2, 'prompt2'),
-                                                 (p3, ''), (p4, 'prompt4'),
-                                                 (p5, '')])
+        self.report.execute(value_prompt_answers=[(p1, 'prompt1'), (p2, 'prompt2')])
+        self.report.execute(value_prompt_answers=[(p1, ''), (p2, 'prompt2'), (p3, ''), (p4, 'prompt4'), (p5, '')])
 
     def test_value_and_element_prompt_execute(self):
         """ Test that when both value prompt answers and element prompt
@@ -365,8 +378,10 @@ class MstrReportTestCase(mox.MoxTestBase):
         import copy
         args1 = copy.deepcopy(self.report_args)
         args1['elementsPromptAnswers'] = 'attr1_id;attr1_id:value'
-        args1['promptsAnswerXML'] = "<rsl><pa pt='5' pin='0' did='p2guid' " + \
+        args1['promptsAnswerXML'] = (
+            "<rsl><pa pt='5' pin='0' did='p2guid' "
             "tp='10'>value2</pa><pa pt='5' pin='0' did='p3guid' tp='10'></pa></rsl>"
+        )
         self.client._request(args1).AndReturn(None)
 
         self.mox.ReplayAll()
@@ -375,8 +390,11 @@ class MstrReportTestCase(mox.MoxTestBase):
         prompt1 = Prompt('p1guid', 'Prompt 1', False, attr1)
         prompt2 = Prompt('p2guid', 'Prompt 2', False)
         prompt3 = Prompt('p3guid', 'Prompt 3', False)
-        self.report.execute(element_prompt_answers={prompt1: ['value']},
-            value_prompt_answers=[(prompt2, 'value2'), (prompt3, '')])
+        self.report.execute(
+            element_prompt_answers={prompt1: ['value']},
+            value_prompt_answers=[(prompt2, 'value2'), (prompt3, '')]
+        )
+
 
 class SingletonTestCase(unittest.TestCase):
 
@@ -404,11 +422,11 @@ class SingletonTestCase(unittest.TestCase):
         s2 = Attribute('guid2', 'value1')
         self.assertNotEqual(s1, s2)
 
-
     def test_dif_classes_are_not_singleton(self):
         s1 = Attribute('guid1', 'value1')
         s2 = Metric('guid1', 'value2')
         self.assertNotEqual(s1, s2)
+
 
 class PromptTestCase(unittest.TestCase):
 

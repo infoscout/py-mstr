@@ -4,6 +4,7 @@ import logging
 
 from pyquery import PyQuery as pq
 
+
 """ This API only supports xml format, as it relies on the format for parsing
     the data into python data structures
 """
@@ -11,11 +12,12 @@ BASE_PARAMS = {'taskEnv': 'xml', 'taskContentType': 'xml'}
 BASE_URL = 'http://hostname/MicroStrategy/asp/TaskProc.aspx?'
 logger = logging.getLogger(__name__)
 
+
 class MstrClient(object):
     """Class encapsulating base logic for the MicroStrategy Task Proc API
     """
-    def __init__(self, base_url, username, password, project_source,
-            project_name):
+
+    def __init__(self, base_url, username, password, project_source, project_name):
         """Initialize the MstrClient by logging in and retrieving a session.
 
         Args:
@@ -26,8 +28,7 @@ class MstrClient(object):
             project_name (str): name of project
         """
         self._base_url = base_url
-        self._session = self._login(project_source, project_name,
-                username, password)
+        self._session = self._login(project_source, project_name, username, password)
 
     def __del__(self):
         """Logs the user out of the session.
@@ -43,7 +44,7 @@ class MstrClient(object):
             'server': project_source,
             'project': project_name,
             'userid': username,
-            'password': password 
+            'password': password
         }
         logger.info("logging in.")
         response = self._request(arguments)
@@ -64,10 +65,9 @@ class MstrClient(object):
         Args:
             folder_id (str): guid of folder to list contents. If not supplied,
                 returns contents of root folder
-        
+
         Returns:
-            list: list of dictionaries with keys id, name, description, and type
-                as keys 
+            list: list of dictionaries with keys id, name, description, and type as keys
         """
 
         arguments = {'sessionState': self._session, 'taskID': 'folderBrowse'}
@@ -90,7 +90,7 @@ class MstrClient(object):
 
     def list_elements(self, attribute_id):
         """Returns the elements associated with the given attribute id.
-        
+
         Note that if the call fails (i.e. MicroStrategy returns an
         out of memory stack trace) the returned list is empty
 
@@ -101,11 +101,10 @@ class MstrClient(object):
             list: a list of strings containing the names for attribute values
         """
 
-        arguments = {'taskId': 'browseElements', 'attributeID': attribute_id,
-                'sessionState': self._session}
+        arguments = {'taskId': 'browseElements', 'attributeID': attribute_id, 'sessionState': self._session}
         response = self._request(arguments)
         return self._parse_elements(response)
-        
+
     def _parse_elements(self, response):
         d = pq(response)
         result = []
@@ -114,13 +113,12 @@ class MstrClient(object):
                 result.append(attr.find('n').text)
         return result
 
-
     def get_attribute(self, attribute_id):
         """ Returns the attribute object for the given attribute id.
 
         Args:
             attribute_id (str): the attribute guid
-        
+
         Returns:
             Attribute: Attribute object for this guid
 
@@ -130,8 +128,7 @@ class MstrClient(object):
 
         if not attribute_id:
             raise MstrClientException("You must provide an attribute id")
-        arguments = {'taskId': 'getAttributeForms', 'attributeID': attribute_id,
-                'sessionState': self._session}
+        arguments = {'taskId': 'getAttributeForms', 'attributeID': attribute_id, 'sessionState': self._session}
         response = self._request(arguments)
         d = pq(response)
         return Attribute(d('dssid')[0].text, d('n')[0].text)
@@ -142,7 +139,6 @@ class MstrClient(object):
         result = self._request(arguments)
         logging.info("logging out returned %s" % result)
 
-
     def _request(self, arguments):
         """Assembles the url and performs a get request to
         the MicroStrategy Task Service API
@@ -150,7 +146,7 @@ class MstrClient(object):
         Args:
             arguments (dict): Maps get key parameters to values
 
-        Returns: 
+        Returns:
             str: the xml text response
         """
 
@@ -163,12 +159,13 @@ class MstrClient(object):
 
 
 class Singleton(type):
-    """Singleton parent class to preserve memory. 
+    """Singleton parent class to preserve memory.
 
     Objects are considered to be the same, and thus a new object
     does not need to be instantiated, if an object with that guid
     already exists.
     """
+
     def __call__(cls, *args, **kwargs):
         """Called when a new Singleton object is created.
 
@@ -179,8 +176,7 @@ class Singleton(type):
         """
         # see if guid is in instances
         if args[0] not in cls._instances:
-            cls._instances[args[0]] = super(Singleton, cls).__call__(*args,
-                **kwargs)
+            cls._instances[args[0]] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[args[0]]
 
 
@@ -199,8 +195,10 @@ class Attribute(object):
         guid (str): attribute guid
         name (str): attribute name
     """
+
     __metaclass__ = Singleton
     _instances = {}
+
     def __init__(self, guid, name):
         self.guid = guid
         self.name = name
@@ -226,8 +224,10 @@ class Metric(object):
         guid (str): guid for this metric
         name (str): the name of this metric
     """
+
     __metaclass__ = Singleton
     _instances = {}
+
     def __init__(self, guid, name):
         self.guid = guid
         self.name = name
@@ -262,6 +262,7 @@ class Prompt(object):
         attribute (Attribute): Attribute object associated with the
             prompt if it is an element prompt
     """
+
     def __init__(self, guid, prompt_str, required, attribute=None):
         self.guid = guid
         self.prompt_str = prompt_str
@@ -289,7 +290,7 @@ class Report(object):
     def __init__(self, mstr_client, report_id):
         self._mstr_client = mstr_client
         self._id = report_id
-        self._args = {'reportID': self._id,'sessionState': mstr_client._session}
+        self._args = {'reportID': self._id, 'sessionState': mstr_client._session}
         self._attributes = []
         self._metrics = []
         self._headers = []
@@ -302,7 +303,7 @@ class Report(object):
         """ Returns the prompts associated with this report. If there are
             no prompts, this method raises an error.
 
-        Returns: 
+        Returns:
             list: a list of Prompt objects
 
         Raises:
@@ -316,12 +317,13 @@ class Report(object):
         message = pq(response)('msg')('id')
         if not message:
             logger.debug("failed retrieval of msgID in response %s" % response)
-            raise MstrReportException("Error retrieving msgID for report. Most" 
-                + " likely the report does not have any prompts.")
+            raise MstrReportException(
+                "Error retrieving msgID for report. Most likely the report does not have any prompts."
+            )
             return
         message_id = message[0].text
         arguments = {
-            'taskId': 'getPrompts', 
+            'taskId': 'getPrompts',
             'objectType': '3',
             'msgID': message_id,
             'sessionState': self._mstr_client._session
@@ -339,8 +341,7 @@ class Report(object):
             data = prompt.find('orgn')
             attr = None
             if data is not None:
-                attr = Attribute(data.find('did').text,
-                    data.find('n').text)
+                attr = Attribute(data.find('did').text, data.find('n').text)
             s = prompt.find('mn').text
             required = prompt.find('reqd').text
             guid = prompt.find('loc').find('did').text
@@ -351,15 +352,14 @@ class Report(object):
     def get_headers(self):
         """ Returns the column headers for the report. A report must have
         been executed before calling this method
-            
+
         Returns:
             list: a list of Attribute/Metric objects
         """
 
         if self._headers:
             return self._headers
-        logger.debug("Attempted to retrieve the headers for a report without" + 
-                " prior successful execution.")
+        logger.debug("Attempted to retrieve the headers for a report without prior successful execution.")
         raise MstrReportException("Execute a report before viewing the headers")
 
     def get_attributes(self):
@@ -372,8 +372,7 @@ class Report(object):
             list: list of Attribute objects
         """
         if self._attributes:
-            logger.info("Attributes have already been retrieved. Returning " +
-                "saved objects.")
+            logger.info("Attributes have already been retrieved. Returning saved objects.")
             return self._attributes
         arguments = {'taskId': 'browseAttributeForms', 'contentType': 3}
         arguments.update(self._args)
@@ -383,8 +382,7 @@ class Report(object):
 
     def _parse_attributes(self, response):
         d = pq(response)
-        self._attributes = [Attribute(attr.find('did').text, attr.find('n').text)
-                for attr in d('a')]
+        self._attributes = [Attribute(attr.find('did').text, attr.find('n').text) for attr in d('a')]
 
     def get_values(self):
         """ Returns the rows for a prompt that has been executed.
@@ -416,8 +414,7 @@ class Report(object):
         """
         if self._metrics:
             return self._metrics
-        logger.debug("Attempted to retrieve the metrics for a report without" + 
-                " prior successful execution.")
+        logger.debug("Attempted to retrieve the metrics for a report without prior successful execution.")
         raise MstrReportException("Execute a report before viewing the metrics")
 
     def execute(self, start_row=0, start_col=0, max_rows=100000, max_cols=255,
@@ -425,7 +422,7 @@ class Report(object):
         """Execute a report.
 
         Executes a report with the specified parameters. Default values
-        are chosen so that most likely all rows and columns will be 
+        are chosen so that most likely all rows and columns will be
         retrieved in one call. However, a client could use pagination
         by cycling through calls of execute and changing the min and max
         rows. Pagination is usefull when there is a risk of the amount of
@@ -456,11 +453,10 @@ class Report(object):
             'maxRows': max_rows,
             'maxCols': max_cols,
             'styleName': 'ReportDataVisualizationXMLStyle',
-            'resultFlags' :'393216' # prevent columns from merging
+            'resultFlags': '393216'  # prevent columns from merging
         }
         if value_prompt_answers and element_prompt_answers:
-            arguments.update(self._format_xml_prompts(value_prompt_answers,
-                element_prompt_answers))
+            arguments.update(self._format_xml_prompts(value_prompt_answers, element_prompt_answers))
         elif value_prompt_answers:
             arguments.update(self._format_value_prompts(value_prompt_answers))
         elif element_prompt_answers:
@@ -487,8 +483,7 @@ class Report(object):
             if s:
                 result += s
             elif not (s == '' and type(prompt) == Prompt):
-                raise MstrReportException("Invalid syntax for value prompt " +
-                    "answers. Must pass (Prompt, string) tuples")
+                raise MstrReportException("Invalid syntax for value prompt answers. Must pass (Prompt, string) tuples")
         return {'valuePromptAnswers': result}
 
     def _format_element_prompts(self, prompts):
@@ -513,12 +508,11 @@ class Report(object):
         # iterate through the columns while iterating through the rows
         # and create a list of tuples with the attribute and value for that
         # column for each row
-        return [[(self._headers[index], val.text) for index, val
-                in enumerate(row.iterchildren())] for row in d('r')]
-    
+        return [[(self._headers[index], val.text) for index, val in enumerate(row.iterchildren())] for row in d('r')]
+
     def _report_errors(self, d):
         """ Performs error checking on the result from the execute
-        call. 
+        call.
 
         Specifically, this method is looking for the <error> tag
         returned by MicroStrategy.
@@ -536,11 +530,12 @@ class Report(object):
         """
         error = d('error')
         if error:
-            raise MstrReportException("There was an error running the report." +
-                "Microstrategy error message: " + error[0].text)
+            raise MstrReportException(
+                "There was an error running the report. Microstrategy error message: " + error[0].text
+            )
             return True
-        return False          
-    
+        return False
+
     def _get_headers(self, d):
         obj = d('objects')
         headers = d('headers')
@@ -555,21 +550,24 @@ class Report(object):
                 self._metrics.append(metric)
                 self._headers.append(metric)
 
+
 class MstrClientException(Exception):
     """Class used to raise errors in the MstrClient class
     """
+
     def __init__(self, msg):
         self.msg = msg
 
     def __str__(self):
         return self.msg
+
 
 class MstrReportException(Exception):
     """Class used to raise errors in the MstrReport class
     """
+
     def __init__(self, msg):
         self.msg = msg
 
     def __str__(self):
         return self.msg
-
