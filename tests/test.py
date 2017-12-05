@@ -3,7 +3,7 @@ import unittest
 import mox
 import stubout
 
-from py_mstr import Attribute, Metric, MstrClient, MstrClientException, MstrReportException, Prompt, Report, Singleton
+from py_mstr import Attribute, Metric, MstrClient, MstrReportException, Prompt, Report
 
 
 class MstrClientTestCase(mox.MoxTestBase):
