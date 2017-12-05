@@ -5,6 +5,9 @@ py-mstr
 .. image:: https://circleci.com/gh/infoscout/py-mstr.svg?style=svg
     :target: https://circleci.com/gh/infoscout/py-mstr
 
+.. image:: https://codecov.io/gh/infoscout/py-mstr/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/infoscout/py-mstr
+
 py-mstr is a python package to connect and interact with MicroStrategy intelligence server. The code interacts with a MicroStrategy Webservices Task Processing API. Endpoint is generally ``http://hostname/MicroStrategy/asp/TaskProc.aspx?``.
 
 Its features include:
