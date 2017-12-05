@@ -22,7 +22,6 @@ setup(
         'pyquery >= 1.2.8, < 1.3.0',
         'requests >= 2.3.0',
     ],
-    download_url='https://github.com/infoscout/py-mstr/tarball/v0.1.0',
     tests_require=['discover', 'mox == 0.5.3'],
     test_suite="tests",
     classifiers=[
