@@ -1,6 +1,7 @@
 from py_mstr import MstrClient, Singleton, Attribute, Metric, Prompt, Report, MstrClientException, MstrReportException
 
 import unittest
+
 import mox
 import stubout
 
