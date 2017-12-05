@@ -1,8 +1,8 @@
-import urllib
-import requests
 import logging
+import urllib
 
 from pyquery import PyQuery as pq
+import requests
 
 
 """ This API only supports xml format, as it relies on the format for parsing

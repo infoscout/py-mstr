@@ -1,9 +1,9 @@
-from py_mstr import MstrClient, Singleton, Attribute, Metric, Prompt, Report, MstrClientException, MstrReportException
-
 import unittest
 
 import mox
 import stubout
+
+from py_mstr import Attribute, Metric, MstrClient, MstrClientException, MstrReportException, Prompt, Report, Singleton
 
 
 class MstrClientTestCase(mox.MoxTestBase):
