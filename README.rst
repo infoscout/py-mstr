@@ -123,6 +123,3 @@ Contributing
 #. Fork the `py-mstr <https://github.com/infoscout/py-mstr>`_ repository on Github to make your changes.
 #. Write tests to show the changes work as expected.
 #. Send a pull request to the maintainer. Add yourself to ``CONTRIBUTORS.txt``.
-
-Change log
-==========
