@@ -3,7 +3,7 @@ import urllib
 
 import mock
 
-from py_mstr import Attribute, Metric, MstrClient, MstrReportException, Prompt, Report
+from py_mstr import Attribute, Metric, MstrClient, MstrClientException, MstrReportException, Prompt, Report
 
 
 class MstrTestCase(unittest.TestCase):
@@ -152,6 +152,14 @@ class MstrClientRequestTestCase(MstrTestCase):
         result = self.client._request(args)
         mock_requests.assert_called_with(url)
         self.assertEquals(text, result)
+
+    @mock.patch('requests.get')
+    def test_client_request_server_error(self, mock_requests):
+        text = '<taskResponse statusCode="500" errorMsg="(Internal Server Error.)"></taskResponse>'
+        mock_requests.return_value = mock.Mock(ok=False, text=text)
+
+        with self.assertRaises(MstrClientException):
+            self.client._request({})
 
 
 class MstrReportTestCase(MstrTestCase):

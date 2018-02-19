@@ -154,6 +154,8 @@ class MstrClient(object):
         request = self._base_url + urllib.urlencode(arguments)
         logger.info("submitting request %s" % request)
         response = requests.get(request)
+        if not response.ok:
+            raise MstrClientException(response.text)
         logger.info("received response %s" % response.text)
         return response.text
 
