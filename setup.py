@@ -22,7 +22,7 @@ setup(
         'pyquery >= 1.2.8, < 1.3.0',
         'requests >= 2.3.0',
     ],
-    tests_require=['discover', 'mox == 0.5.3'],
+    tests_require=['discover', 'mock'],
     test_suite="tests",
     classifiers=[
         'Intended Audience :: Developers',
