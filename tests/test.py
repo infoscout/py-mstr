@@ -9,15 +9,12 @@ from py_mstr import Attribute, Metric, MstrClient, MstrReportException, Prompt, 
 class MstrClientTestCase(mox.MoxTestBase):
 
     def setUp(self):
-        mox.MoxTestBase.setUp(self)
+        super(MstrClientTestCase, self).setUp()
         s = stubout.StubOutForTesting()
         s.Set(MstrClient, '_login', lambda self, source, name, username, password: None)
         self.client = MstrClient('url?', 'username', 'pw', 'source', 'name')
         self.client._session = 'session'
         self.mox.StubOutWithMock(self.client, "_request")
-
-    def tearDown(self):
-        mox.MoxTestBase.tearDown(self)
 
     def test_init(self):
         """ Test the format of retrieving the session when logging in.
@@ -144,7 +141,7 @@ class MstrClientTestCase(mox.MoxTestBase):
 class MstrReportTestCase(mox.MoxTestBase):
 
     def setUp(self):
-        mox.MoxTestBase.setUp(self)
+        super(MstrReportTestCase, self).setUp()
         s = stubout.StubOutForTesting()
         s.Set(MstrClient, '_login', lambda self, source, name, username, password: None)
         self.client = MstrClient('url?', 'username', 'pw', 'source', 'name')
@@ -177,9 +174,6 @@ class MstrReportTestCase(mox.MoxTestBase):
             'reportID': 'report_id',
             'sessionState': 'session'
         }
-
-    def tearDown(self):
-        mox.MoxTestBase.tearDown(self)
 
     def test_no_prompts_gives_error(self):
         """ Test that if a user tries to retrieve prompts for a report
