@@ -399,12 +399,6 @@ class MstrReportTestCase(mox.MoxTestBase):
 
 class SingletonTestCase(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def test_two_identical_guids_are_same_object(self):
         s1 = Attribute('guid1', 'value1')
         s2 = Attribute('guid1', 'value2')
@@ -427,30 +421,3 @@ class SingletonTestCase(unittest.TestCase):
         s1 = Attribute('guid1', 'value1')
         s2 = Metric('guid1', 'value2')
         self.assertNotEqual(s1, s2)
-
-
-class PromptTestCase(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-
-class AttributeTestCase(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-
-class MetricTestCase(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
