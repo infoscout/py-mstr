@@ -1,4 +1,5 @@
 import unittest
+import urllib
 
 import mock
 
@@ -129,6 +130,28 @@ class MstrClientTestCase(MstrTestCase):
         self.assertTrue(isinstance(attr, Attribute))
         self.assertEqual('attr_id', attr.guid)
         self.assertEqual('attr_name', attr.name)
+
+
+class MstrClientRequestTestCase(MstrTestCase):
+
+    @mock.patch('requests.get')
+    def test_client_request(self, mock_requests):
+        args = {
+            'taskId': 'login',
+            'server': 'source',
+            'project': 'name',
+            'userid': 'username',
+            'password': 'pw',
+            'taskEnv': 'xml',
+            'taskContentType': 'xml',
+        }
+        url = self.client._base_url + urllib.urlencode(args)
+        text = "<response><root><sessionState>session</sessionState><name></name></root></response>"
+        mock_requests.return_value = mock.Mock(text=text)
+
+        result = self.client._request(args)
+        mock_requests.assert_called_with(url)
+        self.assertEquals(text, result)
 
 
 class MstrReportTestCase(MstrTestCase):
