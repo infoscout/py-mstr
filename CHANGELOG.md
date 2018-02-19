@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.2.1] - 2018-02-19
+
+### Added
+- FIX: Raise `MstrClientException` if the MicroStrategy server returns an error response
+- Created common `MstrTestCase` base class to handle common `setUp`/`tearDown` operations
+
+### Changed
+- Switched from mox library to mock library
+
+### Removed
+- Deleted empty test cases
+
 ## [0.2.0] - 2017-12-08
 
 ### Added
