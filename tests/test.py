@@ -5,7 +5,7 @@ import mock
 from py_mstr import Attribute, Metric, MstrClient, MstrReportException, Prompt, Report
 
 
-class MstrClientTestCase(unittest.TestCase):
+class MstrTestCase(unittest.TestCase):
 
     def setUp(self):
         with mock.patch.object(MstrClient, '_login'):
@@ -15,6 +15,9 @@ class MstrClientTestCase(unittest.TestCase):
     def tearDown(self):
         # We cannot use mock here, since __del__ is called AFTER the patch is stopped
         self.client._logout = lambda: None
+
+
+class MstrClientTestCase(MstrTestCase):
 
     @mock.patch.object(MstrClient, '_request')
     def test_init(self, mock_mstr_client_request):
@@ -128,13 +131,10 @@ class MstrClientTestCase(unittest.TestCase):
         self.assertEqual('attr_name', attr.name)
 
 
-class MstrReportTestCase(unittest.TestCase):
+class MstrReportTestCase(MstrTestCase):
 
     def setUp(self):
-        with mock.patch.object(MstrClient, '_login'):
-            self.client = MstrClient('url?', 'username', 'pw', 'source', 'name')
-        self.client._session = 'session'
-
+        super(MstrReportTestCase, self).setUp()
         self.report = Report(self.client, 'report_id')
         self.report_response = (
             "<response><report_data_list><report_data>"
@@ -162,10 +162,6 @@ class MstrReportTestCase(unittest.TestCase):
             'reportID': 'report_id',
             'sessionState': 'session'
         }
-
-    def tearDown(self):
-        # We cannot use mock here, since __del__ is called AFTER the patch is stopped
-        self.client._logout = lambda: None
 
     @mock.patch.object(MstrClient, '_request')
     def test_no_prompts_gives_error(self, mock_mstr_client_request):
