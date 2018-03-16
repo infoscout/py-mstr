@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:2.7.13
+    steps:
+      - checkout
+      - run:
+          name: Setup a virtualenv
+          command: virtualenv venv
+      - run:
+          name: Install coverage
+          command: |
+            source venv/bin/activate
+            pip install coverage
+      - run:
+          name: Run tests with coverage
+          command: |
+            source venv/bin/activate
+            coverage run setup.py test
+            coverage xml
+      - run:
+          name: Send coverage results to CodeCov
+          command: bash <(curl -s https://codecov.io/bash)
+workflows:
+  version: 2
+  test_and_upload_coverage:
+    jobs:
+      - test
