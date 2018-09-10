@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Upgraded CircleCI to 2.0
+- Switched resource_class on CircleCI from medium (default) to small
 
 ## [0.2.1] - 2018-02-19
 
