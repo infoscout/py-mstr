@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Add timeout support for report `execute` method
 
-## [Unreleased]
-
 ### Changed
 - Upgraded CircleCI to 2.0
 - Switched resource_class on CircleCI from medium (default) to small
