@@ -150,7 +150,7 @@ class MstrClientRequestTestCase(MstrTestCase):
         mock_requests.return_value = mock.Mock(text=text)
 
         result = self.client._request(args)
-        mock_requests.assert_called_with(url)
+        mock_requests.assert_called_with(url, timeout=None)
         self.assertEquals(text, result)
 
     @mock.patch('requests.get')
@@ -284,9 +284,9 @@ class MstrReportTestCase(MstrTestCase):
         )
 
         self.assertRaises(MstrReportException, self.report.execute)
-        mock_mstr_client_request.assert_called_with(self.report_args)
+        mock_mstr_client_request.assert_called_with(self.report_args, None)
         self.assertRaises(MstrReportException, self.report.get_values)
-        mock_mstr_client_request.assert_called_with(self.report_args)
+        mock_mstr_client_request.assert_called_with(self.report_args, None)
         self.assertEqual(None, self.report._values)
 
     @mock.patch.object(MstrClient, '_request')
@@ -296,7 +296,7 @@ class MstrReportTestCase(MstrTestCase):
         mock_mstr_client_request.return_value = self.report_response
 
         self.report.execute()
-        mock_mstr_client_request.assert_called_with(self.report_args)
+        mock_mstr_client_request.assert_called_with(self.report_args, None)
 
         self.assertEqual(2, len(self.report._headers))
         self.assertEqual(2, len(self.report._values))
@@ -325,14 +325,14 @@ class MstrReportTestCase(MstrTestCase):
         attr2 = Attribute('attr2_id', 'attr2_name')
         prompt2 = Prompt('p2guid', 'Prompt 2', False, attr2)
         self.report.execute(element_prompt_answers={prompt1: ['value']})
-        mock_mstr_client_request.assert_called_with(args1)
+        mock_mstr_client_request.assert_called_with(args1, None)
         self.report.execute(element_prompt_answers={prompt1: ['val1', 'val2']})
-        mock_mstr_client_request.assert_called_with(args2)
+        mock_mstr_client_request.assert_called_with(args2, None)
         # test with optional prompt
 
         # dict iteration is non-deterministic, so test it separately
         result = self.report._format_element_prompts({prompt1: ['value1'], prompt2: ['value2']})
-        mock_mstr_client_request.assert_called_with(args2)
+        mock_mstr_client_request.assert_called_with(args2, None)
         self.failUnless(
             result['elementsPromptAnswers'] in [
                 'attr2_id;attr2_id:value2,attr1_id;attr1_id:value1',
@@ -341,7 +341,7 @@ class MstrReportTestCase(MstrTestCase):
         )
 
         result = self.report._format_element_prompts({prompt1: ['val1', 'val2'], prompt2: ['val3']})
-        mock_mstr_client_request.assert_called_with(args2)
+        mock_mstr_client_request.assert_called_with(args2, None)
         self.failUnless(
             result['elementsPromptAnswers'] in [
                 'attr2_id;attr2_id:val3,attr1_id;attr1_id:val1;attr1_id:val2',
@@ -372,11 +372,11 @@ class MstrReportTestCase(MstrTestCase):
         p5 = Prompt('guid5', 'P5', False)
 
         self.report.execute(value_prompt_answers=[(p1, 'prompt1')])
-        mock_mstr_client_request.assert_called_with(args1)
+        mock_mstr_client_request.assert_called_with(args1, None)
         self.report.execute(value_prompt_answers=[(p1, 'prompt1'), (p2, 'prompt2')])
-        mock_mstr_client_request.assert_called_with(args2)
+        mock_mstr_client_request.assert_called_with(args2, None)
         self.report.execute(value_prompt_answers=[(p1, ''), (p2, 'prompt2'), (p3, ''), (p4, 'prompt4'), (p5, '')])
-        mock_mstr_client_request.assert_called_with(self.report_args)
+        mock_mstr_client_request.assert_called_with(self.report_args, None)
 
     @mock.patch.object(MstrClient, '_request')
     def test_value_and_element_prompt_execute(self, mock_mstr_client_request):
@@ -399,7 +399,7 @@ class MstrReportTestCase(MstrTestCase):
             element_prompt_answers={prompt1: ['value']},
             value_prompt_answers=[(prompt2, 'value2'), (prompt3, '')]
         )
-        mock_mstr_client_request.assert_called_with(args1)
+        mock_mstr_client_request.assert_called_with(args1, None)
 
 
 class SingletonTestCase(unittest.TestCase):

@@ -139,7 +139,7 @@ class MstrClient(object):
         result = self._request(arguments)
         logging.info("logging out returned %s" % result)
 
-    def _request(self, arguments):
+    def _request(self, arguments, timeout=None):
         """Assembles the url and performs a get request to
         the MicroStrategy Task Service API
 
@@ -153,9 +153,15 @@ class MstrClient(object):
         arguments.update(BASE_PARAMS)
         request = self._base_url + urllib.urlencode(arguments)
         logger.info("submitting request %s" % request)
-        response = requests.get(request)
+
+        try:
+            response = requests.get(request, timeout=timeout)
+        except requests.exceptions.Timeout as e:
+            raise MstrClientException(str(e))
+
         if not response.ok:
             raise MstrClientException(response.text)
+
         logger.info("received response %s" % response.text)
         return response.text
 
@@ -420,7 +426,7 @@ class Report(object):
         raise MstrReportException("Execute a report before viewing the metrics")
 
     def execute(self, start_row=0, start_col=0, max_rows=100000, max_cols=255,
-                value_prompt_answers=None, element_prompt_answers=None):
+                value_prompt_answers=None, element_prompt_answers=None, timeout=None):
         """Execute a report.
 
         Executes a report with the specified parameters. Default values
@@ -443,6 +449,7 @@ class Report(object):
             element_prompt_answers: (dict) element prompt answers represented as a
                 dictionary of Prompt objects (with attr field specified)
                 mapping to a list of attribute values to pass
+            timeout (int): Number of seconds client will wait for server to send response
 
         Raises:
             MstrReportException: if there was an error executing the report.
@@ -464,7 +471,7 @@ class Report(object):
         elif element_prompt_answers:
             arguments.update(self._format_element_prompts(element_prompt_answers))
         arguments.update(self._args)
-        response = self._mstr_client._request(arguments)
+        response = self._mstr_client._request(arguments, timeout)
         self._values = self._parse_report(response)
 
     def _format_xml_prompts(self, v_prompts, e_prompts):
