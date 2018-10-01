@@ -157,7 +157,7 @@ class MstrClient(object):
         try:
             response = requests.get(request, timeout=timeout)
         except requests.exceptions.Timeout as e:
-            raise MstrClientException(repr(e))
+            raise MstrClientException(str(e))
 
         if not response.ok:
             raise MstrClientException(response.text)
