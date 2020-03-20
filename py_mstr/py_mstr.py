@@ -1,5 +1,5 @@
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from pyquery import PyQuery as pq
 import requests
@@ -151,7 +151,7 @@ class MstrClient(object):
         """
 
         arguments.update(BASE_PARAMS)
-        request = self._base_url + urllib.urlencode(arguments)
+        request = self._base_url + urllib.parse.urlencode(arguments)
         logger.info("submitting request %s" % request)
 
         try:
@@ -188,7 +188,7 @@ class Singleton(type):
         return cls._instances[args[0]]
 
 
-class Attribute(object):
+class Attribute(object, metaclass=Singleton):
     """ Object encapsulating an attribute on MicroStrategy
 
     An attribute can take many values, all of which are elements
@@ -203,8 +203,6 @@ class Attribute(object):
         guid (str): attribute guid
         name (str): attribute name
     """
-
-    __metaclass__ = Singleton
     _instances = {}
 
     def __init__(self, guid, name):
@@ -218,7 +216,7 @@ class Attribute(object):
         return "Attribute: %s - %s" % (self.guid, self.name)
 
 
-class Metric(object):
+class Metric(object, metaclass=Singleton):
     """ Object encapsulating a metric on MicroStrategy
 
     A metric represents computation on attributes. A metric
@@ -232,8 +230,6 @@ class Metric(object):
         guid (str): guid for this metric
         name (str): the name of this metric
     """
-
-    __metaclass__ = Singleton
     _instances = {}
 
     def __init__(self, guid, name):
@@ -497,7 +493,7 @@ class Report(object):
 
     def _format_element_prompts(self, prompts):
         result = ''
-        for prompt, values in prompts.iteritems():
+        for prompt, values in prompts.items():
             if result:
                 result += ","
             if values:
