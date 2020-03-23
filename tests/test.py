@@ -1,5 +1,5 @@
 import unittest
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import mock
 
@@ -145,13 +145,13 @@ class MstrClientRequestTestCase(MstrTestCase):
             'taskEnv': 'xml',
             'taskContentType': 'xml',
         }
-        url = self.client._base_url + urllib.urlencode(args)
+        url = self.client._base_url + urllib.parse.urlencode(args)
         text = "<response><root><sessionState>session</sessionState><name></name></root></response>"
         mock_requests.return_value = mock.Mock(text=text)
 
         result = self.client._request(args)
         mock_requests.assert_called_with(url, timeout=None)
-        self.assertEquals(text, result)
+        self.assertEqual(text, result)
 
     @mock.patch('requests.get')
     def test_client_request_server_error(self, mock_requests):
@@ -262,14 +262,14 @@ class MstrReportTestCase(MstrTestCase):
 
     def test_get_headers_with_execution(self):
         self.report._headers = ['h1', 'h2']
-        self.assertEquals(self.report._headers, self.report.get_headers())
+        self.assertEqual(self.report._headers, self.report.get_headers())
 
     def test_get_values_without_execution(self):
         self.assertRaises(MstrReportException, self.report.get_values)
 
     def test_get_values_with_execution(self):
         self.report._values = ['v1', 'v2']
-        self.assertEquals(self.report._values, self.report.get_values())
+        self.assertEqual(self.report._values, self.report.get_values())
 
     @mock.patch.object(MstrClient, '_request')
     def test_error_execute(self, mock_mstr_client_request):
@@ -333,7 +333,7 @@ class MstrReportTestCase(MstrTestCase):
         # dict iteration is non-deterministic, so test it separately
         result = self.report._format_element_prompts({prompt1: ['value1'], prompt2: ['value2']})
         mock_mstr_client_request.assert_called_with(args2, None)
-        self.failUnless(
+        self.assertTrue(
             result['elementsPromptAnswers'] in [
                 'attr2_id;attr2_id:value2,attr1_id;attr1_id:value1',
                 'attr1_id;attr1_id:value1,attr2_id;attr2_id:value2',
@@ -342,7 +342,7 @@ class MstrReportTestCase(MstrTestCase):
 
         result = self.report._format_element_prompts({prompt1: ['val1', 'val2'], prompt2: ['val3']})
         mock_mstr_client_request.assert_called_with(args2, None)
-        self.failUnless(
+        self.assertTrue(
             result['elementsPromptAnswers'] in [
                 'attr2_id;attr2_id:val3,attr1_id;attr1_id:val1;attr1_id:val2',
                 'attr1_id;attr1_id:val1;attr1_id:val2,attr2_id;attr2_id:val3',
