@@ -1,4 +1,4 @@
-from py_mstr.py_mstr import Attribute, Metric, MstrClient, MstrClientException, MstrReportException, Prompt, Report, Singleton
+from .py_mstr import Attribute, Metric, MstrClient, MstrClientException, MstrReportException, Prompt, Report, Singleton
 
 
 __all__ = [
