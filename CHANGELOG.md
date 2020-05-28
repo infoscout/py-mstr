@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - 2020-05-28
+
+### Added
+- Python 2 support.
+
+## [1.0.0] - 2020-04-28
+
+### Added
+- Python 3 support.
+
+### Removed
+- Python 2 support.
+
 ## [0.2.2] - 2018-10-01
 
 ### Added
