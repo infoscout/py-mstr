@@ -1,8 +1,11 @@
 import logging
-import urllib.request, urllib.parse, urllib.error
+import six.moves.urllib.request
+import six.moves.urllib.parse
+import six.moves.urllib.error
 
 from pyquery import PyQuery as pq
 import requests
+import six
 
 
 """ This API only supports xml format, as it relies on the format for parsing
@@ -151,7 +154,7 @@ class MstrClient(object):
         """
 
         arguments.update(BASE_PARAMS)
-        request = self._base_url + urllib.parse.urlencode(arguments)
+        request = self._base_url + six.moves.urllib.parse.urlencode(arguments)
         logger.info("submitting request %s" % request)
 
         try:
@@ -188,7 +191,7 @@ class Singleton(type):
         return cls._instances[args[0]]
 
 
-class Attribute(object, metaclass=Singleton):
+class Attribute(six.with_metaclass(Singleton, object)):
     """ Object encapsulating an attribute on MicroStrategy
 
     An attribute can take many values, all of which are elements
@@ -216,7 +219,7 @@ class Attribute(object, metaclass=Singleton):
         return "Attribute: %s - %s" % (self.guid, self.name)
 
 
-class Metric(object, metaclass=Singleton):
+class Metric(six.with_metaclass(Singleton, object)):
     """ Object encapsulating a metric on MicroStrategy
 
     A metric represents computation on attributes. A metric
@@ -493,7 +496,7 @@ class Report(object):
 
     def _format_element_prompts(self, prompts):
         result = ''
-        for prompt, values in prompts.items():
+        for prompt, values in six.iteritems(prompts):
             if result:
                 result += ","
             if values:

@@ -1,5 +1,7 @@
 import unittest
-import urllib.request, urllib.parse, urllib.error
+import six.moves.urllib.request
+import six.moves.urllib.parse
+import six.moves.urllib.error
 
 import mock
 
@@ -145,7 +147,7 @@ class MstrClientRequestTestCase(MstrTestCase):
             'taskEnv': 'xml',
             'taskContentType': 'xml',
         }
-        url = self.client._base_url + urllib.parse.urlencode(args)
+        url = self.client._base_url + six.moves.urllib.parse.urlencode(args)
         text = "<response><root><sessionState>session</sessionState><name></name></root></response>"
         mock_requests.return_value = mock.Mock(text=text)
 
