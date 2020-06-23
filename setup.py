@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'pyquery >= 1.2.8, < 1.3.0',
         'requests >= 2.3.0',
+        'six >= 1.9.0'
     ],
     tests_require=['discover', 'mock'],
     test_suite="tests",

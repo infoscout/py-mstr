@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  test:
+  test-python2:
     docker:
       - image: circleci/python:3.6
     resource_class: small
@@ -22,9 +22,33 @@ jobs:
             coverage xml
       - run:
           name: Send coverage results to CodeCov
-          command: bash <(curl -s https://codecov.io/bash)
+          command: bash <(curl -s https://codecov.io/bash) -F python2
+  test-python3:
+    docker:
+      - image: circleci/python:3.6
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Setup a virtualenv
+          command: virtualenv venv
+      - run:
+          name: Install coverage
+          command: |
+            source venv/bin/activate
+            pip3 install coverage
+      - run:
+          name: Run tests with coverage
+          command: |
+            source venv/bin/activate
+            coverage run setup.py test
+            coverage xml
+      - run:
+          name: Send coverage results to CodeCov
+          command: bash <(curl -s https://codecov.io/bash) -F python3
 workflows:
   version: 2
   test_and_upload_coverage:
     jobs:
-      - test
+      - test-python2
+      - test-python3
